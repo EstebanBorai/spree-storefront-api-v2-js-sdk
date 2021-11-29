@@ -104,8 +104,8 @@ const generateBracketsArrayPrefix = (prefix): string => {
 }
 
 const stringify = (
-  object,
-  prefix,
+  object, // required
+  prefix, // required
   generateArrayPrefix = generateBracketsArrayPrefix,
   strictNullHandling = false,
   skipNulls = false,
@@ -117,8 +117,7 @@ const stringify = (
   format = 'RFC3986',
   formatter = rfc3986Formatter,
   encodeValuesOnly = false,
-  charset = 'utf-8',
-  sideChannel
+  charset = 'utf-8'
 ) => {
   let obj = object
 
@@ -157,8 +156,7 @@ const stringifyParameters = (object: Record<string, any>, opts): string => {
         'RFC3986',
         rfc3986Formatter,
         false,
-        'utf-8',
-        sideChannel
+        'utf-8'
       )
     )
   }
