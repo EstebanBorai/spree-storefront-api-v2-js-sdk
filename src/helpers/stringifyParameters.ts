@@ -108,16 +108,18 @@ const encode = (str, charset, format) => {
 }
 
 const isArray = Array.isArray
+
 const push = Array.prototype.push
+
 const pushToArray = function (arr, valueOrArray) {
   push.apply(arr, isArray(valueOrArray) ? valueOrArray : [valueOrArray])
 }
 
-const rfc3986Formatter = (value) => {
+const rfc3986Formatter = (value): string => {
   return String(value)
 }
 
-const generateBracketsArrayPrefix = (prefix): string => {
+const generateBracketsArrayPrefix = (prefix: string, _key: string): string => {
   return prefix + '[]'
 }
 
@@ -166,13 +168,9 @@ const stringify = (
 
   for (let i = 0; i < objKeys.length; ++i) {
     const key = objKeys[i]
-    const value = typeof key === 'object' && key.value !== undefined ? key.value : obj[key]
+    const value = obj[key]
 
-    var keyPrefix = isArray(obj)
-      ? typeof generateArrayPrefix === 'function'
-        ? generateArrayPrefix(prefix, key)
-        : prefix
-      : prefix + (allowDots ? '.' + key : '[' + key + ']')
+    const keyPrefix = isArray(obj) ? generateArrayPrefix(prefix, key) : prefix + ('[' + key + ']')
 
     pushToArray(
       values,
