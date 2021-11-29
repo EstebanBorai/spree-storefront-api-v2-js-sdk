@@ -202,7 +202,7 @@ const stringify = (
  * Spree uses the "brackets" format for serializing arrays which
  * is a different format than used by URLSearchParams.
  */
-const stringifyParameters = (object: Record<string, any>): string => {
+const objectToQuerystring = (object: Record<string, any>): string => {
   const obj = object
 
   const keys = []
@@ -238,4 +238,4 @@ const stringifyParameters = (object: Record<string, any>): string => {
   return joined
 }
 
-export default stringifyParameters
+export default objectToQuerystring
