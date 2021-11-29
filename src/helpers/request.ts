@@ -1,10 +1,6 @@
 // Based on https://github.com/ljharb/qs/blob/master/lib/stringify.js
 
-const toISO = Date.prototype.toISOString
-
-const serializeDate = (date) => {
-  return toISO.call(date)
-}
+const serializeDate = (date: Date) => date.toISOString()
 
 const isBuffer = (obj) => {
   if (!obj || typeof obj !== 'object') {
@@ -14,15 +10,12 @@ const isBuffer = (obj) => {
   return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj))
 }
 
-const isNonNullishPrimitive = (v) => {
-  return (
-    typeof v === 'string' ||
-    typeof v === 'number' ||
-    typeof v === 'boolean' ||
-    typeof v === 'symbol' ||
-    typeof v === 'bigint'
-  )
-}
+const isNonNullishPrimitive = (v) =>
+  typeof v === 'string' ||
+  typeof v === 'number' ||
+  typeof v === 'boolean' ||
+  typeof v === 'symbol' ||
+  typeof v === 'bigint'
 
 const hexTable = (() => {
   const array = []
@@ -34,12 +27,10 @@ const hexTable = (() => {
   return array
 })()
 
-const replace = String.prototype.replace
-
 const percentTwenties = /%20/g
 
-const rfc1738Formatter = (value) => {
-  return replace.call(value, percentTwenties, '+')
+const rfc1738Formatter = (value: string): string => {
+  return value.replace(percentTwenties, '+')
 }
 
 const encode = (str, charset, format) => {
@@ -119,9 +110,7 @@ const rfc3986Formatter = (value): string => {
   return String(value)
 }
 
-const generateBracketsArrayPrefix = (prefix: string, _key: string): string => {
-  return prefix + '[]'
-}
+const generateBracketsArrayPrefix = (prefix: string, _key: string): string => prefix + '[]'
 
 const charset = 'utf-8'
 
