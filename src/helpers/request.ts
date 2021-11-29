@@ -107,7 +107,7 @@ const generateBracketsArrayPrefix = (prefix: string, _key: string): string => pr
 
 const charset = 'utf-8'
 
-const stringify = (source, prefix, encodeValuesOnly = false) => {
+const stringify = (source, prefix) => {
   if (source instanceof Date) {
     source = serializeDate(source)
   }
@@ -117,7 +117,7 @@ const stringify = (source, prefix, encodeValuesOnly = false) => {
   }
 
   if (isNonNullishPrimitive(source) || isBuffer(source)) {
-    const keyValue = encodeValuesOnly ? prefix : encode(prefix, charset)
+    const keyValue = encode(prefix, charset)
 
     return [rfc3986Formatter(keyValue) + '=' + rfc3986Formatter(encode(source, charset))]
   }
@@ -136,7 +136,7 @@ const stringify = (source, prefix, encodeValuesOnly = false) => {
 
     const keyPrefix = isArray(source) ? generateBracketsArrayPrefix(prefix, key) : prefix + ('[' + key + ']')
 
-    pushToArray(values, stringify(value, keyPrefix, encodeValuesOnly))
+    pushToArray(values, stringify(value, keyPrefix))
   }
 
   return values
@@ -155,7 +155,7 @@ const objectToQuerystring = (source: Record<string, any>): string => {
   for (let i = 0; i < objKeys.length; ++i) {
     const key = objKeys[i]
 
-    pushToArray(topLevelKeys, stringify(source[key], key, false))
+    pushToArray(topLevelKeys, stringify(source[key], key))
   }
 
   return topLevelKeys.join('&')
