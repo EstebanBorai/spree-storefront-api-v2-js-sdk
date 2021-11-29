@@ -129,8 +129,6 @@ const stringify = (
   source,
   prefix,
   encoder = encode,
-  filter = undefined,
-  allowDots = false,
   format = 'RFC3986',
   formatter = rfc3986Formatter,
   encodeValuesOnly = false
@@ -167,7 +165,7 @@ const stringify = (
 
     const keyPrefix = isArray(source) ? generateBracketsArrayPrefix(prefix, key) : prefix + ('[' + key + ']')
 
-    pushToArray(values, stringify(value, keyPrefix, encoder, filter, allowDots, format, formatter, encodeValuesOnly))
+    pushToArray(values, stringify(value, keyPrefix, encoder, format, formatter, encodeValuesOnly))
   }
 
   return values
@@ -186,7 +184,7 @@ const objectToQuerystring = (source: Record<string, any>): string => {
   for (let i = 0; i < objKeys.length; ++i) {
     const key = objKeys[i]
 
-    pushToArray(topLevelKeys, stringify(source[key], key, encode, undefined, false, 'RFC3986', rfc3986Formatter, false))
+    pushToArray(topLevelKeys, stringify(source[key], key, encode, 'RFC3986', rfc3986Formatter, false))
   }
 
   return topLevelKeys.join('&')
