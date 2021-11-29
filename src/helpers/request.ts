@@ -123,10 +123,11 @@ const generateBracketsArrayPrefix = (prefix: string, _key: string): string => {
   return prefix + '[]'
 }
 
+const charset = 'utf-8'
+
 const stringify = (
-  object, // required
-  prefix, // required
-  generateArrayPrefix = generateBracketsArrayPrefix,
+  source,
+  prefix,
   strictNullHandling = false,
   skipNulls = false,
   encoder = encode,
@@ -136,49 +137,45 @@ const stringify = (
   serializeDate,
   format = 'RFC3986',
   formatter = rfc3986Formatter,
-  encodeValuesOnly = false,
-  charset = 'utf-8'
+  encodeValuesOnly = false
 ) => {
-  let obj = object
-
-  if (obj instanceof Date) {
-    obj = serializeDate(obj)
+  if (source instanceof Date) {
+    source = serializeDate(source)
   }
 
-  if (obj === null) {
-    obj = ''
+  if (source === null) {
+    source = ''
   }
 
-  if (isNonNullishPrimitive(obj) || isBuffer(obj)) {
+  if (isNonNullishPrimitive(source) || isBuffer(source)) {
     if (encoder) {
       const keyValue = encodeValuesOnly ? prefix : encoder(prefix, charset, format)
 
-      return [formatter(keyValue) + '=' + formatter(encoder(obj, charset, format))]
+      return [formatter(keyValue) + '=' + formatter(encoder(source, charset, format))]
     }
 
-    return [formatter(prefix) + '=' + formatter(String(obj))]
+    return [formatter(prefix) + '=' + formatter(String(source))]
   }
 
   const values = []
 
-  if (typeof obj === 'undefined') {
+  if (typeof source === 'undefined') {
     return values
   }
 
-  const objKeys = Object.keys(obj)
+  const objKeys = Object.keys(source)
 
   for (let i = 0; i < objKeys.length; ++i) {
     const key = objKeys[i]
-    const value = obj[key]
+    const value = source[key]
 
-    const keyPrefix = isArray(obj) ? generateArrayPrefix(prefix, key) : prefix + ('[' + key + ']')
+    const keyPrefix = isArray(source) ? generateBracketsArrayPrefix(prefix, key) : prefix + ('[' + key + ']')
 
     pushToArray(
       values,
       stringify(
         value,
         keyPrefix,
-        generateArrayPrefix,
         strictNullHandling,
         skipNulls,
         encoder,
@@ -188,8 +185,7 @@ const stringify = (
         serializeDate,
         format,
         formatter,
-        encodeValuesOnly,
-        charset
+        encodeValuesOnly
       )
     )
   }
@@ -202,22 +198,19 @@ const stringify = (
  * Spree uses the "brackets" format for serializing arrays which
  * is a different format than used by URLSearchParams.
  */
-const objectToQuerystring = (object: Record<string, any>): string => {
-  const obj = object
+const objectToQuerystring = (source: Record<string, any>): string => {
+  const topLevelKeys = []
 
-  const keys = []
-
-  const objKeys = Object.keys(obj)
+  const objKeys = Object.keys(source)
 
   for (let i = 0; i < objKeys.length; ++i) {
     const key = objKeys[i]
 
     pushToArray(
-      keys,
+      topLevelKeys,
       stringify(
-        obj[key],
+        source[key],
         key,
-        generateBracketsArrayPrefix,
         false,
         false,
         encode,
@@ -227,13 +220,12 @@ const objectToQuerystring = (object: Record<string, any>): string => {
         serializeDate,
         'RFC3986',
         rfc3986Formatter,
-        false,
-        'utf-8'
+        false
       )
     )
   }
 
-  return keys.join('&')
+  return topLevelKeys.join('&')
 }
 
 export { objectToQuerystring }
