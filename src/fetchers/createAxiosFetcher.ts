@@ -1,4 +1,3 @@
-import * as qs from 'qs'
 import type { AxiosInstance } from 'axios'
 import type { CreateFetcher } from '../interfaces/ClientConfig'
 import FetchError from '../errors/FetchError'

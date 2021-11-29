@@ -1,4 +1,3 @@
-import * as qs from 'qs'
 import FetchError from '../errors/FetchError'
 import type { CreateFetcher } from '../interfaces/ClientConfig'
 import type { CreateCustomizedFetchFetcher } from '../interfaces/CreateCustomizedFetchFetcher'
