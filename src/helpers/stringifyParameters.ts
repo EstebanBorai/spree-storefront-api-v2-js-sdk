@@ -149,12 +149,13 @@ const stringify = (
     obj = ''
   }
 
-  if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
+  if (isNonNullishPrimitive(obj) || isBuffer(obj)) {
     if (encoder) {
       const keyValue = encodeValuesOnly ? prefix : encoder(prefix, charset, format)
 
       return [formatter(keyValue) + '=' + formatter(encoder(obj, charset, format))]
     }
+
     return [formatter(prefix) + '=' + formatter(String(obj))]
   }
 
