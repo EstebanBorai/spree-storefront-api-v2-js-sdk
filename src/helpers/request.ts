@@ -107,7 +107,7 @@ const generateBracketsArrayPrefix = (prefix: string, _key: string): string => pr
 
 const charset = 'utf-8'
 
-const stringify = (source, prefix) => {
+const stringify = (source: unknown, prefix: string) => {
   if (source instanceof Date) {
     source = serializeDate(source)
   }
