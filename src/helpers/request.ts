@@ -233,9 +233,7 @@ const objectToQuerystring = (object: Record<string, any>): string => {
     )
   }
 
-  const joined = keys.join('&')
-
-  return joined
+  return keys.join('&')
 }
 
-export default objectToQuerystring
+export { objectToQuerystring }

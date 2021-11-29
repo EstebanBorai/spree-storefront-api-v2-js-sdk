@@ -1,7 +1,7 @@
 import type { AxiosInstance } from 'axios'
 import type { CreateFetcher } from '../interfaces/ClientConfig'
 import FetchError from '../errors/FetchError'
-import objectToQuerystring from '../helpers/objectToQuerystring'
+import { objectToQuerystring } from '../helpers/request'
 
 const createAxiosFetcher: CreateFetcher = (fetcherOptions) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires

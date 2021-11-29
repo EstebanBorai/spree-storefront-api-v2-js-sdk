@@ -1,5 +1,5 @@
 import FetchError from '../errors/FetchError'
-import objectToQuerystring from '../helpers/objectToQuerystring'
+import { objectToQuerystring } from '../helpers/request'
 import type { CreateFetcher } from '../interfaces/ClientConfig'
 import type { CreateCustomizedFetchFetcher } from '../interfaces/CreateCustomizedFetchFetcher'
 
