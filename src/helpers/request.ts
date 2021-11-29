@@ -27,7 +27,7 @@ const hexTable = (() => {
   return array
 })()
 
-const encode = (str, charset) => {
+const encode = (str, charset): string => {
   // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
   // It has been adapted here for stricter adherence to RFC 3986
   if (str.length === 0) {
@@ -95,7 +95,7 @@ const isArray = Array.isArray
 
 const push = Array.prototype.push
 
-const pushToArray = function (arr, valueOrArray) {
+const pushToArray = (arr, valueOrArray) => {
   push.apply(arr, isArray(valueOrArray) ? valueOrArray : [valueOrArray])
 }
 
