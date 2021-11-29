@@ -6,6 +6,24 @@ const serializeDate = (date) => {
   return toISO.call(date)
 }
 
+const isBuffer = (obj) => {
+  if (!obj || typeof obj !== 'object') {
+    return false
+  }
+
+  return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj))
+}
+
+const isNonNullishPrimitive = (v) => {
+  return (
+    typeof v === 'string' ||
+    typeof v === 'number' ||
+    typeof v === 'boolean' ||
+    typeof v === 'symbol' ||
+    typeof v === 'bigint'
+  )
+}
+
 const hexTable = (() => {
   const array = []
 
@@ -24,7 +42,7 @@ const rfc1738Formatter = (value) => {
   return replace.call(value, percentTwenties, '+')
 }
 
-const encode = (str, defaultEncoder, charset, kind, format) => {
+const encode = (str, charset, format) => {
   // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
   // It has been adapted here for stricter adherence to RFC 3986
   if (str.length === 0) {
@@ -128,9 +146,64 @@ const stringify = (
   if (obj === null) {
     obj = ''
   }
+
+  if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
+    if (encoder) {
+      const keyValue = encodeValuesOnly ? prefix : encoder(prefix, charset, format)
+
+      return [formatter(keyValue) + '=' + formatter(encoder(obj, charset, format))]
+    }
+    return [formatter(prefix) + '=' + formatter(String(obj))]
+  }
+
+  const values = []
+
+  if (typeof obj === 'undefined') {
+    return values
+  }
+
+  const objKeys = Object.keys(obj)
+
+  for (let i = 0; i < objKeys.length; ++i) {
+    const key = objKeys[i]
+    const value = typeof key === 'object' && key.value !== undefined ? key.value : obj[key]
+
+    var keyPrefix = isArray(obj)
+      ? typeof generateArrayPrefix === 'function'
+        ? generateArrayPrefix(prefix, key)
+        : prefix
+      : prefix + (allowDots ? '.' + key : '[' + key + ']')
+
+    pushToArray(
+      values,
+      stringify(
+        value,
+        keyPrefix,
+        generateArrayPrefix,
+        strictNullHandling,
+        skipNulls,
+        encoder,
+        filter,
+        sort,
+        allowDots,
+        serializeDate,
+        format,
+        formatter,
+        encodeValuesOnly,
+        charset
+      )
+    )
+  }
+
+  return values
 }
 
-const stringifyParameters = (object: Record<string, any>, opts): string => {
+/**
+ * Serializes object into a query string understood by Spree.
+ * Spree uses the "brackets" format for serializing arrays which
+ * is a different format than used by URLSearchParams.
+ */
+const stringifyParameters = (object: Record<string, any>): string => {
   const obj = object
 
   const keys = []
