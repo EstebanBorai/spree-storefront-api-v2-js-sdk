@@ -27,13 +27,7 @@ const hexTable = (() => {
   return array
 })()
 
-const percentTwenties = /%20/g
-
-const rfc1738Formatter = (value: string): string => {
-  return value.replace(percentTwenties, '+')
-}
-
-const encode = (str, charset, format) => {
+const encode = (str, charset) => {
   // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
   // It has been adapted here for stricter adherence to RFC 3986
   if (str.length === 0) {
@@ -64,8 +58,7 @@ const encode = (str, charset, format) => {
       c === 0x7e || // ~
       (c >= 0x30 && c <= 0x39) || // 0-9
       (c >= 0x41 && c <= 0x5a) || // a-z
-      (c >= 0x61 && c <= 0x7a) || // A-Z
-      (format === rfc1738Formatter && (c === 0x28 || c === 0x29)) // ( )
+      (c >= 0x61 && c <= 0x7a) // A-Z
     ) {
       out += string.charAt(i)
       continue
@@ -114,7 +107,7 @@ const generateBracketsArrayPrefix = (prefix: string, _key: string): string => pr
 
 const charset = 'utf-8'
 
-const stringify = (source, prefix, format = 'RFC3986', formatter = rfc3986Formatter, encodeValuesOnly = false) => {
+const stringify = (source, prefix, encodeValuesOnly = false) => {
   if (source instanceof Date) {
     source = serializeDate(source)
   }
@@ -124,9 +117,9 @@ const stringify = (source, prefix, format = 'RFC3986', formatter = rfc3986Format
   }
 
   if (isNonNullishPrimitive(source) || isBuffer(source)) {
-    const keyValue = encodeValuesOnly ? prefix : encode(prefix, charset, format)
+    const keyValue = encodeValuesOnly ? prefix : encode(prefix, charset)
 
-    return [formatter(keyValue) + '=' + formatter(encode(source, charset, format))]
+    return [rfc3986Formatter(keyValue) + '=' + rfc3986Formatter(encode(source, charset))]
   }
 
   const values = []
@@ -143,7 +136,7 @@ const stringify = (source, prefix, format = 'RFC3986', formatter = rfc3986Format
 
     const keyPrefix = isArray(source) ? generateBracketsArrayPrefix(prefix, key) : prefix + ('[' + key + ']')
 
-    pushToArray(values, stringify(value, keyPrefix, format, formatter, encodeValuesOnly))
+    pushToArray(values, stringify(value, keyPrefix, encodeValuesOnly))
   }
 
   return values
@@ -162,7 +155,7 @@ const objectToQuerystring = (source: Record<string, any>): string => {
   for (let i = 0; i < objKeys.length; ++i) {
     const key = objKeys[i]
 
-    pushToArray(topLevelKeys, stringify(source[key], key, 'RFC3986', rfc3986Formatter, false))
+    pushToArray(topLevelKeys, stringify(source[key], key, false))
   }
 
   return topLevelKeys.join('&')
